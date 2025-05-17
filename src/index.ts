@@ -45,7 +45,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "query_express",
-        description: "实时快递查询",
+        description: "实时查询快递物流信息",
         inputSchema: {
           type: "object",
           properties: {
@@ -59,6 +59,40 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             }
           },
           required: ["com", "num"]
+        }
+      },
+      {
+        name: "compare_price",
+        description: "查询多个快递公司快递价格",
+        inputSchema: {
+          type: "object",
+          properties: {
+            weight: {
+              type: "number",
+              description: "重量",
+            },
+            length: {
+              type: "number",
+              description: "长度",
+            },
+            width: {
+              type: "number",
+              description: "宽度",
+            },
+            height: {
+              type: "number",
+              description: "高度",
+            },
+            from: {
+              type: "string",
+              description: "出发地",
+            },
+            to: {
+              type: "string",
+              description: "目的地",
+            }
+          },
+          required: ["from", "to"]
         }
       }
     ]
@@ -93,8 +127,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     case "query_express": {
       const com = String(request.params.arguments?.com);
       const num = String(request.params.arguments?.num);
-      if (!com || !num) {
-        throw new Error("com and num are required");
+      if (!com) {
+        throw new Error("请输入快递公司名称或编码");
+      }
+      if (!num) {
+        throw new Error("请输入快递单号");
       }
       
       const client = new ExpressClient(customer, auth_key);
@@ -115,6 +152,38 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [{
           type: "text",
           text: `实时查询快递成功： ${JSON.stringify(result)}`
+        }]
+      };
+    }
+
+    case "compare_price": {
+      const weight = Number(request.params.arguments?.weight) || 1;
+      const length = Number(request.params.arguments?.length);
+      const width = Number(request.params.arguments?.width);
+      const height = Number(request.params.arguments?.height);
+      const from = String(request.params.arguments?.from);
+      const to = String(request.params.arguments?.to);
+      if (!from) {
+        throw new Error("请输入出发地");
+      }
+      if (!to) {
+        throw new Error("请输入目的地");
+      }
+      
+      const client = new ExpressClient(customer, auth_key);
+      const results = await client.comparePrice({
+        weight,
+        length,
+        width,
+        height,
+        from,
+        to
+      });
+      
+      return {
+        content: [{
+          type: "text",
+          text: `快递价格比对结果：${JSON.stringify(results, null, 2)}`
         }]
       };
     }
