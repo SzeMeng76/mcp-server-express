@@ -1,8 +1,7 @@
 {
-  "name": "mcp-server-express",
+  "name": "mcp-server-express-maxbin",
   "version": "0.1.0",
   "description": "A Model Context Protocol server",
-  "private": true,
   "type": "module",
   "bin": {
     "mcp-server-express": "./build/index.js"

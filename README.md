@@ -1,52 +1,48 @@
 # mcp-server-express MCP Server
 
-A Model Context Protocol server
+一个基于TypeScript的MCP服务器，实现了简单的快递查询系统。
 
-This is a TypeScript-based MCP server that implements a simple notes system. It demonstrates core MCP concepts by providing:
+## 功能
 
-- Resources representing text notes with URIs and metadata
-- Tools for creating new notes
-- Prompts for generating summaries of notes
+### 工具
+- `query_express` - 通过快递单号查询快递信息
+  - 调用快递100接口 https://api.kuaidi100.com/manager/v2/home
+- `compare_price` - 比较快递公司的寄件价格
 
-## Features
+## 开发
 
-### Tools
-- `query_express` - Query express by num
-  - 调快递100查询快递接口 https://api.kuaidi100.com/manager/v2/home
-
-## Development
-
-Install dependencies:
+安装依赖：
 ```bash
 npm install
 ```
 
-Build the server:
+构建服务器：
 ```bash
 npm run build
 ```
 
-For development with auto-rebuild:
+开发模式（自动重建）：
 ```bash
 npm run watch
 ```
 
-## Installation
+## 安装
 
-To use with Claude Desktop, add the server config:
+要与Claude Desktop一起使用，请添加服务器配置：
 
-On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+在MacOS上：`~/Library/Application Support/Claude/claude_desktop_config.json`
+在Windows上：`%APPDATA%/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
-    "mcp-server-express": {
-      "command": "node",
+    "mcp-server-express-maxbin": {
+      "command": "npx",
       "args": [
-        "/Users/shouqianba/Documents/AICode/mcp-server-express/build/index.js",
-        "--auth_key=123456",
-        "--customer=123456",
+        "-y",
+        "mcp-server-express-maxbin",
+        "--auth_key=kuaidi100authkey",
+        "--customer=kuaidi100customer",
       ],
       "env": {}
     }
@@ -54,12 +50,12 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 }
 ```
 
-### Debugging
+### 调试
 
-Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
+由于MCP服务器通过stdio通信，调试可能具有挑战性。我们推荐使用[MCP Inspector](https://github.com/modelcontextprotocol/inspector)，它作为一个包脚本提供：
 
 ```bash
 npm run inspector
 ```
 
-The Inspector will provide a URL to access debugging tools in your browser.
+Inspector将提供一个URL，用于在浏览器中访问调试工具。
