@@ -1,6 +1,6 @@
 {
   "name": "@szemeng76/mcp-server-express-maxbin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "快递查询 MCP 服务器",
   "main": "dist/index.js",
   "type": "module",
