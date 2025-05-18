@@ -146,7 +146,7 @@ export class ExpressClient {
      * @param params 查询参数
      * @returns 快递查询结果
      */
-    async query(params: ExpressQueryParams): Promise<String> {
+    async query(params: ExpressQueryParams): Promise<any> {
         console.log('开始查询快递信息:', JSON.stringify(params, null, 2));
         
         const param = JSON.stringify(params);
@@ -157,13 +157,18 @@ export class ExpressClient {
             customer: this.customer
         });
 
-        const url = `${this.apiUrl}?customer=${this.customer}&sign=${sign}&param=${param}`;
-        console.log('请求URL:', url);
-
         try {
             console.log('开始发送HTTP请求...');
-            const response = await fetch(url, {
-                method: 'GET'
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    customer: this.customer,
+                    sign: sign,
+                    param: param
+                }).toString()
             });
             
             console.log('HTTP响应状态:', response.status, response.statusText);
@@ -174,12 +179,9 @@ export class ExpressClient {
                 throw new Error(`API请求失败: HTTP ${response.status} - ${errorText}`);
             }
 
-            const result = await response.json() as ExpressQueryResult;
+            const result = await response.json();
             console.log('API返回结果:', JSON.stringify(result, null, 2));
-            const logisticsDetails = result.data.map((item: ExpressQueryResult['data'][0], index: number) => 
-                `[${index + 1}] ${item.ftime}\n    详情：${item.context}`
-            ).join('\n\n');
-            return logisticsDetails;
+            return result;
         } catch (error) {
             console.error('请求发生错误:', error);
             throw new Error(`快递查询失败: ${(error as Error).message ?? String(error)}`);
@@ -396,4 +398,30 @@ export class ExpressClient {
         
         return results;
     }
+}
+
+/**
+ * 查询参数接口
+ */
+export interface QueryParams {
+  com: string;
+  num: string;
+  phone?: string;
+  from?: string;
+  to?: string;
+  resultv2?: string;
+  show?: string;
+  order?: string;
+}
+
+/**
+ * 价格比较参数接口
+ */
+export interface PriceCompareParams {
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  from: string;
+  to: string;
 }
